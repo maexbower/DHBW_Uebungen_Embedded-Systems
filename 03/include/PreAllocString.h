@@ -26,8 +26,12 @@ public:
     }
     const char & operator []( const int idx )
     {
-        //ToDo abfrage ob im Bereich
-        return payload[idx];
+        if((idx < SIZE) && 0 <= idx )
+        {
+            return payload[idx];
+        }else{
+            return '\0';
+        }
     }
     /* Current number of characters in string */
     size_t GetLength() const
@@ -51,8 +55,7 @@ public:
     PreAllocString & operator =(char rhs)
     {
         Empty();
-        *endOfString++ = rhs;
-        *endOfString = '\0';
+        AddFormat("%c", rhs);
         return *this;
     }
     PreAllocString & operator =(const char * rhs)
@@ -69,8 +72,7 @@ public:
     }
     PreAllocString & operator +=(char rhs )
     {
-        *endOfString++ = rhs;
-        *endOfString = '\0';
+        AddFormat("%c", rhs);
         return *this;
     }
     PreAllocString & operator +=(char const * rhs)
@@ -83,18 +85,12 @@ public:
     {
         va_list params;
         va_start(params,format);
-
-        endOfString = Printf(endOfString, &payload[SIZE],format,  params);
+        endOfString = Printf(endOfString, &payload[SIZE], format,  params);
         va_end(params);
     }
     void AddWhiteSpace()
     {
-        if((GetLength()+1) < SIZE)
-        {
-            *endOfString++ = ' ';
-            *endOfString = '\0';
-        }
-
+        AddFormat("%c", ' ');
     }
 private:
     char payload[SIZE];
