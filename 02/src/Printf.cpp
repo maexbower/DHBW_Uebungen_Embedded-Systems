@@ -7,8 +7,16 @@
 
 char * Printf ( char * dst , const void * end , const char * fmt , ...)
 {
+    char * endptr;
     va_list params;
     va_start(params,fmt);
+    endptr = vaPrintf(dst, end, fmt, params);
+    va_end(params);
+    return endptr;
+}
+
+char * vaPrintf ( char * dst , const void * end , const char * fmt , va_list params)
+{
     char * position = dst;
     int inputPosition = 0;
 
@@ -195,5 +203,6 @@ char * Printf ( char * dst , const void * end , const char * fmt , ...)
         }
     }
     end = '\0';
-    return dst;
+    return position;
+
 }

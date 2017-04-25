@@ -26,11 +26,11 @@ public:
     }
     const char & operator []( const int idx )
     {
-        if((idx < SIZE) && 0 <= idx )
+        if((idx < static_cast<int>(SIZE)) && (0 <= idx ))
         {
             return payload[idx];
         }else{
-            return '\0';
+            return payload[0];
         }
     }
     /* Current number of characters in string */
@@ -84,8 +84,8 @@ public:
     void AddFormat(const char * format , ... )
     {
         va_list params;
-        va_start(params,format);
-        endOfString = Printf(endOfString, &payload[SIZE], format,  params);
+        va_start(params, format);
+        endOfString = vaPrintf(endOfString, &payload[SIZE-1], format,  params);
         va_end(params);
     }
     void AddWhiteSpace()

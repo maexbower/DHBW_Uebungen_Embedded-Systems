@@ -17,5 +17,6 @@
 #define MAX_INT_ANZAHL 10
 #define FIRST_ASCII_INT 48
 #define FIRST_ASCII_ALPH 'A'
-    char * Printf ( char * dst , const void * end , const char * fmt , ...) ;
+    char * Printf ( char * dst , const void * end , const char * fmt , ...);
+    char * vaPrintf ( char * dst , const void * end , const char * fmt , va_list params);
 #endif //EMBEDDEDUEBUNGEN02_PRINTF_H
