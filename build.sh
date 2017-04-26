@@ -30,20 +30,21 @@ fi
 
 COUNTER=1
 
-echo 'CXX=g++-6' > config.mk
+echo 'CXX=g++' > config.mk
 echo 'CXXFLAGS=-Werror -Wall -Wextra -fno-exceptions -Wno-format -fno-rtti -std=c++1y' >> config.mk
-echo 'OUTPUT="./bin"' >> config.mk
+echo 'OUTPUT="/bin"' >> config.mk
 echo 'SILENT_MKDIR=' >> config.mk
 
 
 echo 'include config.mk' > Makefile
-echo 'all: $(OUTPUT) build' >> Makefile
-echo 'build:' >> Makefile
+echo 'all: $(OUTPUT)' >> Makefile
+echo '  build' >> Makefile
 
-for i in $(ls -d */); do echo '	@set -e; $(CXX) $(CXXFLAGS) -o $(OUTPUT)/'"${i%%/}"' '"${i%%/}"'/src/*.cpp -I '"${i%%/}"'/include/' >> Makefile \
-&& echo '	@echo' "$COUNTER"'. CC '"${i%%/}" >> Makefile \
-&& (( COUNTER++ )) \
-; done
+for i in $(ls -d */); do (
+    echo '	@set -e; $(CXX) $(CXXFLAGS) -o '"${i%%/}"'/bin/'"${i%%/}"' '"${i%%/}"'/src/*.cpp -I '"${i%%/}"'/include/' >> Makefile
+    echo '	@echo' "$COUNTER"'. CC '"${i%%/}" >> Makefile
+    (( COUNTER++ ))
+); done
 
 echo 'start:' >> Makefile
 echo '	$(SILENT_MKDIR)mkdir $(OUTPUT)' >> Makefile
@@ -65,11 +66,12 @@ echo ""
 
 COUNTER=1
 
-for i in $(ls bin/); do echo "$COUNTER. Test" && \
-./bin/$i && \
-echo '' && \
-(( COUNTER++ )) \
-; done
+for i in $(ls */); do (
+    echo "$COUNTER. Test"
+    $i/bin/$i
+    echo ''
+    (( COUNTER++ ))
+); done
 
 if [ $? -eq 0 ]
 then
