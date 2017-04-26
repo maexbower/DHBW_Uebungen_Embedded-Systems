@@ -23,21 +23,23 @@ NC='\033[0m' # No Color]]'
 touch Makefile
 touch config.mk
 
-if [ -d ./bin ]
+for i in $(ls */); do (
+    if [ -d $i/bin ]
     then
-        rm -rf ./bin
-fi
+        rm -rf $i/bin
+    fi
+); done
+
 
 COUNTER=1
 
 echo 'CXX=g++' > config.mk
 echo 'CXXFLAGS=-Werror -Wall -Wextra -fno-exceptions -Wno-format -fno-rtti -std=c++1y' >> config.mk
-echo 'OUTPUT="/bin"' >> config.mk
 echo 'SILENT_MKDIR=' >> config.mk
 
 
 echo 'include config.mk' > Makefile
-echo 'all: $(OUTPUT)' >> Makefile
+echo 'all:' >> Makefile
 echo '  build' >> Makefile
 
 for i in $(ls -d */); do (
@@ -47,7 +49,10 @@ for i in $(ls -d */); do (
 ); done
 
 echo 'start:' >> Makefile
-echo '	$(SILENT_MKDIR)mkdir $(OUTPUT)' >> Makefile
+for i in $(ls */); do (
+    echo '	$(SILENT_MKDIR)mkdir $i/bin' >> Makefile
+); done
+
 
 make start
 make build
