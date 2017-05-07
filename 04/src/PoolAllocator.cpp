@@ -1,44 +1,31 @@
 //
 // Created by max on 03.05.17.
 //
-
+//
 
 #include "../include/PoolAllocator.h"
-
+#ifdef DEBUG
+#include <stdio.h>
+#endif
 
 IHeapBase::IHeapBase(
-        //Constructor Params
-        const size_t HEAP_BLOCKSIZE,
-        const size_t HEAP_BLOCKCOUNT,
-        uint8_t *data,
-        uint8_t* *p_usedFields
-) :
-//Init Consts
-//need to be the same order than in declaration
-        HEAP_BLOCKSIZE(HEAP_BLOCKSIZE),
-        HEAP_BLOCKCOUNT(HEAP_BLOCKCOUNT),
-        data(data)
+            //Constructor Params
+            const size_t HEAP_BLOCKSIZE,
+            const size_t HEAP_BLOCKCOUNT,
+            uint8_t *data,
+            uint8_t* *p_usedFields
+        ) :
+        //Init Consts
+        //need to be the same order than in declaration
+                HEAP_BLOCKSIZE(HEAP_BLOCKSIZE),
+                HEAP_BLOCKCOUNT(HEAP_BLOCKCOUNT),
+                data(data)
 {
     //Init DataStore Info
     usedFields = p_usedFields;
-
-
-
-
-//    printf("data: %p\n", data);
-//    printf("data[0]: %p\n", (void*)data[0]);
-//    printf("data[0][0]: %u\n", data[0][0]);
-//    printf("data[0][1]: %u\n", data[0][1]);
-//    printf("data[0][15]: %u\n", data[0][15]);
-//    printf("data[1]: %p\n", (void*)data[1]);
-//    printf("data[0][0]: %u\n", data[1][0]);
-//    printf("usedFields: %p\n", usedFields);
-//    printf("usedFields[0]: %p\n", usedFields[0]);
-    //printf("usedFields[0][0]: %p\n", (void*)usedFields[0][0]);
-    //printf("usedFields[0][1]: %p\n", (void*)usedFields[0][1]);
-
 }
-/*void IHeapBase::printData()
+#ifdef DEBUG
+void IHeapBase::printData()
 {
     uint8_t *ptr = data;
     uint8_t* *usedPtr = usedFields;
@@ -57,7 +44,9 @@ IHeapBase::IHeapBase(
         ptr--;
         printf("\n");
     }
-}*/
+}
+#endif
+
 void * IHeapBase::Allocate ( size_t sizeInBytes )
 {
         size_t requiredBlocks = sizeInBytes / HEAP_BLOCKSIZE;
@@ -86,7 +75,7 @@ void * IHeapBase::Allocate ( size_t sizeInBytes )
                         for(size_t b = 0; requiredBlocks > b ; b++)
                         {
                             usedFields[(2*a)+(2*b)] = &data[a*HEAP_BLOCKSIZE];
-                            usedFields[(2*a)+(2*b)+1] = &data[(a*HEAP_BLOCKSIZE)+sizeInBytes];
+                            usedFields[(2*a)+(2*b)+1] = &data[(a*HEAP_BLOCKSIZE)+sizeInBytes-1];
 
                         }
                         return usedFields[2*a];
@@ -118,7 +107,7 @@ size_t IHeapBase::getMaximaleGroesseAbBlock(size_t blockNr) const
     {
         blockCount++;
     }
-    return blockNr-blockCount;
+    return (blockCount-blockNr);
 }
 size_t IHeapBase::getNextFreeBlock() const
 {

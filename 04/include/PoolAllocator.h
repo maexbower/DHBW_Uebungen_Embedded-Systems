@@ -1,13 +1,15 @@
 //
 // Created by max on 03.05.17.
 //
-
+//#define DEBUG
 #ifndef EMBEDDEDUEBUNGEN04_POOLALLOCATOR_H
 #define EMBEDDEDUEBUNGEN04_POOLALLOCATOR_H
 
 #define CREATE(varName, blockCount, blockSize) DataStore<blockSize, blockCount> varName;
 #include <cstddef>
 #include <cstdint>
+
+
 class IHeap
 {
 public :
@@ -47,7 +49,10 @@ public:
     size_t getBlockCount() const;
     void * Allocate ( size_t sizeInBytes );
     void   Deallocate ( void *);
+#ifdef DEBUG
     void printData();
+#endif
+
 
     /* Returns remaining # of available bytes */
     size_t Available () const;
@@ -77,12 +82,6 @@ public:
         }
     }
 };
-
-
-
-
-
-
 
 
 #endif //EMBEDDEDUEBUNGEN04_POOLALLOCATOR_H
