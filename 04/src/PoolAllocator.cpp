@@ -2,6 +2,7 @@
 // Created by max on 03.05.17.
 //
 
+
 #include "../include/PoolAllocator.h"
 
 
@@ -9,8 +10,8 @@ IHeapBase::IHeapBase(
         //Constructor Params
         const size_t HEAP_BLOCKSIZE,
         const size_t HEAP_BLOCKCOUNT,
-        uint8_t **data,
-        uint8_t* **p_usedFields
+        uint8_t *data,
+        uint8_t* *p_usedFields
 ) :
 //Init Consts
 //need to be the same order than in declaration
@@ -20,7 +21,43 @@ IHeapBase::IHeapBase(
 {
     //Init DataStore Info
     usedFields = p_usedFields;
+
+
+
+
+//    printf("data: %p\n", data);
+//    printf("data[0]: %p\n", (void*)data[0]);
+//    printf("data[0][0]: %u\n", data[0][0]);
+//    printf("data[0][1]: %u\n", data[0][1]);
+//    printf("data[0][15]: %u\n", data[0][15]);
+//    printf("data[1]: %p\n", (void*)data[1]);
+//    printf("data[0][0]: %u\n", data[1][0]);
+//    printf("usedFields: %p\n", usedFields);
+//    printf("usedFields[0]: %p\n", usedFields[0]);
+    //printf("usedFields[0][0]: %p\n", (void*)usedFields[0][0]);
+    //printf("usedFields[0][1]: %p\n", (void*)usedFields[0][1]);
+
 }
+/*void IHeapBase::printData()
+{
+    uint8_t *ptr = data;
+    uint8_t* *usedPtr = usedFields;
+    printf("data: %p\n", (void *) ptr);
+    for(size_t a = 0; HEAP_BLOCKCOUNT > a; a++, ptr++)
+    {
+        printf("\t[%u]: %p\n", (unsigned int) a, (void *) ptr);
+        printf("\tstart: %p\n", (void *) *usedPtr++);
+        printf("\tende: %p\n", (void *) *usedPtr++);
+        printf("\t");
+        for(size_t b = 0; HEAP_BLOCKSIZE > b; b++, ptr++)
+        {
+            printf("\t[%u]: %u (%c)", (unsigned int) b, (unsigned int) *(ptr), (char) *(ptr));
+
+        }
+        ptr--;
+        printf("\n");
+    }
+}*/
 void * IHeapBase::Allocate ( size_t sizeInBytes )
 {
         size_t requiredBlocks = sizeInBytes / HEAP_BLOCKSIZE;
@@ -36,12 +73,26 @@ void * IHeapBase::Allocate ( size_t sizeInBytes )
         if(requiredBlocks == 1)
         {
             size_t freeblock = getNextFreeBlock();
-            usedFields[freeblock][0] = &data[freeblock][0];
-            usedFields[freeblock][1] = &data[freeblock][sizeInBytes];
-            return data[freeblock];
+            usedFields[freeblock*2] = &data[freeblock*HEAP_BLOCKSIZE];
+            usedFields[(freeblock*2)+1] = &data[(freeblock*HEAP_BLOCKSIZE)+HEAP_BLOCKSIZE-1];
+            return usedFields[freeblock*2];
         }else{
+            for(size_t a = 0; HEAP_BLOCKCOUNT > a; a++)
+            {
+                if(usedFields[2*a] == nullptr)
+                {
+                    if(requiredBlocks <= getMaximaleGroesseAbBlock(a))
+                    {
+                        for(size_t b = 0; requiredBlocks > b ; b++)
+                        {
+                            usedFields[(2*a)+(2*b)] = &data[a*HEAP_BLOCKSIZE];
+                            usedFields[(2*a)+(2*b)+1] = &data[(a*HEAP_BLOCKSIZE)+sizeInBytes];
 
-
+                        }
+                        return usedFields[2*a];
+                    }
+                }
+            }
         }
 
     return 0;
@@ -53,17 +104,17 @@ size_t IHeapBase::getRemainingBlockSpace (size_t blockNr) const
     {
         return 0;
     }
-    if((usedFields[blockNr][1]) >= data[blockNr])
+    if((usedFields[blockNr*2]) >= &data[blockNr*HEAP_BLOCKSIZE])
     {
         return 0;
     }else{
-        return (size_t)((data[blockNr]) - (usedFields[blockNr][1]));
+        return (size_t)((&data[blockNr*HEAP_BLOCKSIZE]) - (usedFields[(blockNr*2)+1]));
     }
 }
 size_t IHeapBase::getMaximaleGroesseAbBlock(size_t blockNr) const
 {
     size_t blockCount = blockNr;
-    while(**(usedFields+(blockCount*2)) == 0)
+    while(usedFields[blockCount*2] == nullptr)
     {
         blockCount++;
     }
@@ -71,9 +122,9 @@ size_t IHeapBase::getMaximaleGroesseAbBlock(size_t blockNr) const
 }
 size_t IHeapBase::getNextFreeBlock() const
 {
-    for(size_t i = 0; i < (size_t)HEAP_BLOCKCOUNT; i++)
+    for(size_t i = 0; i < HEAP_BLOCKCOUNT; i++)
     {
-        if(usedFields[0] == 0)
+        if(usedFields[i*2] == nullptr)
         {
             return i;
         }
@@ -85,15 +136,22 @@ void  IHeapBase::Deallocate ( void * ptr)
 {
     if(ptr)
     {
-        //ToDo
-        //Defrag();
+        for(size_t a = 0; HEAP_BLOCKCOUNT > a; a++)
+        {
+            if(usedFields[2*a] == ptr)
+            {
+                usedFields[2*a] = nullptr;
+                usedFields[(2*a)+1] = nullptr;
+            }
+        }
+
     }
 }
 size_t IHeapBase::Available () const
 {
-    uint8_t* **iterator = usedFields;
+    uint8_t* *iterator = usedFields;
     uint8_t remainingBlocks = 0;
-    while((usedFields + (HEAP_BLOCKCOUNT * 2)) > iterator)
+    while(usedFields+(HEAP_BLOCKCOUNT*2) > iterator)
     {
 
         if(nullptr == *iterator)
