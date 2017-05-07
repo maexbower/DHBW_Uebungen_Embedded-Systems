@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/bash
 #   author: Cellebyte alias Marcel Fest
 # --> Fixed issue mentioned by @desyon
 # ----> Script is returning Error Code <----
@@ -82,13 +82,18 @@ for i in $(ls -d */); do (
     retval=$?
     if [ $retval -eq 0 ]
     then
+        exit -1
         echo ""
         echo -e "$GREEN Successfully Tested!$NC"
+
     else
         echo ""
         echo -e "-> $RED Test Fail!$NC <-" >&2
-        exit 1
+
     fi
-    echo ''
+    echo ""
 ); done
+if [ $? -ne 0 ]; then
+  exit 1
+fi
 exit 0
