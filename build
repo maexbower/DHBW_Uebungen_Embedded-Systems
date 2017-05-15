@@ -82,14 +82,11 @@ for i in $(ls -d */); do (
     retval=$?
     if [ $retval -eq 0 ]
     then
-        exit -1
         echo ""
         echo -e "$GREEN Successfully Tested!$NC"
-
     else
         echo ""
         echo -e "-> $RED Test Fail!$NC <-" >&2
-
     fi
     echo ""
 ); done

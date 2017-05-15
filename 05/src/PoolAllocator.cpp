@@ -4,6 +4,9 @@
 //
 
 #include "../include/PoolAllocator.h"
+#ifdef DEBUG
+#include <stdio.h>
+#endif
 
 IHeapBase::IHeapBase(
             //Constructor Params
@@ -21,6 +24,28 @@ IHeapBase::IHeapBase(
     //Init DataStore Info
     usedFields = p_usedFields;
 }
+#ifdef DEBUG
+void IHeapBase::printData()
+{
+    uint8_t *ptr = data;
+    uint8_t* *usedPtr = usedFields;
+    printf("data: %p\n", (void *) ptr);
+    for(size_t a = 0; HEAP_BLOCKCOUNT > a; a++, ptr++)
+    {
+        printf("\t[%u]: %p\n", (unsigned int) a, (void *) ptr);
+        printf("\tstart: %p\n", (void *) *usedPtr++);
+        printf("\tende: %p\n", (void *) *usedPtr++);
+        printf("\t");
+        for(size_t b = 0; HEAP_BLOCKSIZE > b; b++, ptr++)
+        {
+            printf("\t[%u]: %u (%c)", (unsigned int) b, (unsigned int) *(ptr), (char) *(ptr));
+
+        }
+        ptr--;
+        printf("\n");
+    }
+}
+#endif
 
 void * IHeapBase::Allocate ( size_t sizeInBytes )
 {
@@ -29,10 +54,10 @@ void * IHeapBase::Allocate ( size_t sizeInBytes )
         {
             requiredBlocks++;
         }
-        if((Available()/HEAP_BLOCKSIZE) < requiredBlocks)
+        if(Available() < requiredBlocks)
         {
             //Not enough space left
-            return nullptr;
+            return 0;
         }
         if(requiredBlocks == 1)
         {
@@ -124,7 +149,7 @@ size_t IHeapBase::Available () const
         }
         iterator += 2;
     }
-    return remainingBlocks*HEAP_BLOCKSIZE;
+    return remainingBlocks;
 }
 size_t IHeapBase::getBlockSize() const
 {

@@ -1,9 +1,9 @@
-#include <stdio.h>
+//#include <stdio.h>
 #include "../include/PoolAllocator.h"
-#include <string.h>
+//#include <string.h>
 
 int main() {
-/*    CREATE(myData25, 5, 25);
+ /*   CREATE(myData25, 5, 25);
     CREATE(myData15, 3, 15);
     CREATE(myData1, 1, 1);
     myData15.Deallocate((void *)0xfffffffffff);
@@ -25,8 +25,8 @@ int main() {
     printf("Long test: %ld, %ld, %ld, %ld", test2[0], test2[1], test2[2], test2[3]);
     myData15.Deallocate(tmp2);
     myData15.printData();
-    myData25.printData();*/
-    /*CREATE(slotTest, 5,1);
+    myData25.printData();
+    CREATE(slotTest, 5,1);
     char* s1 = (char*)slotTest.Allocate(sizeof(char));
     char* s2 = (char*)slotTest.Allocate(sizeof(char));
     char* s3 = (char*)slotTest.Allocate(sizeof(char));

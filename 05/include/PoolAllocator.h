@@ -1,6 +1,7 @@
 //
 // Created by max on 03.05.17.
 //
+#define DEBUG
 #ifndef EMBEDDEDUEBUNGEN04_POOLALLOCATOR_H
 #define EMBEDDEDUEBUNGEN04_POOLALLOCATOR_H
 
@@ -48,6 +49,10 @@ public:
     size_t getBlockCount() const;
     void * Allocate ( size_t sizeInBytes );
     void   Deallocate ( void *);
+#ifdef DEBUG
+    void printData();
+#endif
+
 
     /* Returns remaining # of available bytes */
     size_t Available () const;
@@ -70,7 +75,7 @@ public:
         {
             for(size_t b = 0; BLOCKSIZE > b; b++)
             {
-               data[i][b] = (uint8_t )1;
+                data[i][b] = (uint8_t )1;
             }
             usedFields[i][0] = nullptr;
             usedFields[i][1] = nullptr;
